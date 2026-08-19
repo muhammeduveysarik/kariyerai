@@ -2,8 +2,13 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pypdf import PdfReader
 from io import BytesIO
+
 import requests
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="KariyerAI",
@@ -18,21 +23,32 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen2.5:3b"
-
+ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+MODEL = "llama-3.3-70b-versatile"
 
 def ask_ollama(prompt):
+
+    if not GROQ_API_KEY:
+        raise Exception("GROQ_API_KEY bulunamadı.")
+
     response = requests.post(
-        OLLAMA_URL,
+        GROQ_URL,
+        headers={
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        },
         json={
             "model": MODEL,
-            "prompt": prompt,
-            "stream": False,
-            "format": "json",
-            "options": {
-                "temperature": 0.2
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.2,
+            "response_format": {
+                "type": "json_object"
             }
         },
         timeout=180
@@ -42,8 +58,9 @@ def ask_ollama(prompt):
 
     data = response.json()
 
-    return json.loads(data["response"])
-
+    return json.loads(
+        data["choices"][0]["message"]["content"]
+    )
 
 def extract_pdf_text(pdf_bytes):
     reader = PdfReader(BytesIO(pdf_bytes))
