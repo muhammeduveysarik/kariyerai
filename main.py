@@ -23,9 +23,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 MODEL = "llama-3.3-70b-versatile"
+
 
 def ask_ollama(prompt):
 
@@ -61,6 +63,7 @@ def ask_ollama(prompt):
     return json.loads(
         data["choices"][0]["message"]["content"]
     )
+
 
 def extract_pdf_text(pdf_bytes):
     reader = PdfReader(BytesIO(pdf_bytes))
@@ -170,10 +173,6 @@ async def analyze_cv(
             detail="CV içerisindeki metin okunamadı."
         )
 
-    # ------------------------------------------------
-    # 1. İLANDAN BECERİLERİ ÇIKAR
-    # ------------------------------------------------
-
     skill_prompt = f"""
 Bir işe alım uzmanısın.
 
@@ -205,10 +204,6 @@ Sadece JSON döndür.
 
     required = skills.get("zorunlu", [])
     preferred = skills.get("tercih", [])
-
-    # ------------------------------------------------
-    # 2. CV'DE BECERİLERİ KONTROL ET
-    # ------------------------------------------------
 
     match_prompt = f"""
 Bir CV doğrulama sistemi olarak çalışıyorsun.
@@ -259,10 +254,6 @@ Sadece JSON döndür.
         {}
     )
 
-    # ------------------------------------------------
-    # 3. TEKNİK PUAN
-    # ------------------------------------------------
-
     required_total = len(required_matches)
     preferred_total = len(preferred_matches)
 
@@ -294,27 +285,15 @@ Sadece JSON döndür.
         preferred_ratio * 25
     )
 
-    # ------------------------------------------------
-    # 4. ATS PUANI
-    # ------------------------------------------------
-
     ats_score, ats_checks = calculate_ats_score(
         cv_text
     )
-
-    # ------------------------------------------------
-    # 5. GENEL PUAN
-    # ------------------------------------------------
 
     overall_score = round(
         technical_score * 0.85
         +
         ats_score * 0.15
     )
-
-    # ------------------------------------------------
-    # 6. EŞLEŞEN / EKSİK BECERİLER
-    # ------------------------------------------------
 
     matched_skills = []
     missing_skills = []
@@ -330,10 +309,6 @@ Sadece JSON döndür.
             matched_skills.append(skill)
         else:
             missing_skills.append(skill)
-
-    # ------------------------------------------------
-    # 7. EKSİK BECERİLER İÇİN AÇIKLAMA
-    # ------------------------------------------------
 
     missing_reason_prompt = f"""
 Bir kariyer danışmanısın.
@@ -377,10 +352,6 @@ Format:
         "aciklamalar",
         []
     )
-
-    # ------------------------------------------------
-    # 8. KARİYER İÇERİKLERİ
-    # ------------------------------------------------
 
     career_prompt = f"""
 Sen profesyonel bir kariyer danışmanısın.
@@ -451,10 +422,6 @@ Format:
     career = ask_ollama(
         career_prompt
     )
-
-    # ------------------------------------------------
-    # 9. SONUÇ
-    # ------------------------------------------------
 
     return {
         "dosya": file.filename,
