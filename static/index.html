@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KariyerAI — Akıllı CV Analizi</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #f6f7fb;
+    color: #111827;
+}
+
+nav {
+    height: 72px;
+    background: rgba(255,255,255,.96);
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+}
+
+.nav-inner {
+    width: 100%;
+    max-width: 1180px;
+    margin: auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 850;
+    letter-spacing: -1px;
+}
+
+.logo span {
+    color: #4f46e5;
+}
+
+.nav-text {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.hero {
+    max-width: 850px;
+    margin: 65px auto 42px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 14px;
+    background: #eef2ff;
+    color: #4338ca;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 18px;
+}
+
+.hero h1 span {
+    color: #4f46e5;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: auto;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #6b7280;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px 80px;
+}
+
+.panel {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 14px 45px rgba(15,23,42,.06);
+}
+
+.inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 750;
+    margin-bottom: 11px;
+}
+
+.upload {
+    height: 230px;
+    border: 2px dashed #cbd5e1;
+    background: #fafbff;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+    transition: .2s;
+}
+
+.upload:hover {
+    border-color: #4f46e5;
+    background: #f5f5ff;
+}
+
+.upload-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+    background: #eef2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    margin-bottom: 13px;
+}
+
+.upload strong {
+    font-size: 15px;
+    margin-bottom: 7px;
+}
+
+.upload small {
+    color: #9ca3af;
+}
+
+#fileName {
+    margin-top: 12px;
+    color: #4f46e5;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+input[type=file] {
+    display: none;
+}
+
+textarea {
+    width: 100%;
+    height: 230px;
+    border: 1px solid #d1d5db;
+    border-radius: 15px;
+    padding: 17px;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px #eef2ff;
+}
+
+.main-button {
+    width: 100%;
+    height: 56px;
+    margin-top: 25px;
+    border: 0;
+    border-radius: 13px;
+    background: #4f46e5;
+    color: white;
+    font-size: 16px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.main-button:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+.main-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#status {
+    min-height: 20px;
+    text-align: center;
+    color: #6b7280;
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.results {
+    display: none;
+    margin-top: 35px;
+}
+
+.section-title {
+    margin: 0 0 17px 3px;
+    font-size: 21px;
+    letter-spacing: -.5px;
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 18px;
+}
+
+.score-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.score-card.primary {
+    background: #111827;
+    color: white;
+}
+
+.score-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .7px;
+    color: #9ca3af;
+}
+
+.primary .score-label {
+    color: #c7d2fe;
+}
+
+.big-score {
+    font-size: 59px;
+    font-weight: 850;
+    letter-spacing: -3px;
+    margin: 8px 0;
+}
+
+.small-score {
+    font-size: 43px;
+    font-weight: 850;
+    letter-spacing: -2px;
+    margin: 12px 0;
+}
+
+.percent {
+    font-size: 22px;
+    letter-spacing: 0;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 20px;
+    background: #374151;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress.light {
+    background: #e5e7eb;
+}
+
+.progress div {
+    height: 100%;
+    width: 0;
+    border-radius: 20px;
+    background: #818cf8;
+    transition: width .8s ease;
+}
+
+.progress.light div {
+    background: #4f46e5;
+}
+
+.criteria {
+    margin-top: 11px;
+    color: #9ca3af;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.card h3 {
+    font-size: 17px;
+    margin-bottom: 18px;
+}
+
+.skill {
+    display: inline-block;
+    padding: 8px 11px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 650;
+    margin: 0 6px 8px 0;
+}
+
+.skill.good {
+    color: #047857;
+    background: #ecfdf5;
+}
+
+.skill.bad {
+    color: #c2410c;
+    background: #fff7ed;
+}
+
+.empty {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.full-card {
+    margin-top: 18px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 27px;
+}
+
+.full-card h3 {
+    margin-bottom: 18px;
+    font-size: 18px;
+}
+
+.advice-list {
+    list-style: none;
+    counter-reset: item;
+}
+
+.advice-list li {
+    counter-increment: item;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.advice-list li::before {
+    content: counter(item);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #4338ca;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.recommendation {
+    margin-top: 18px;
+    padding: 25px;
+    border-radius: 18px;
+    background: #eef2ff;
+    border: 1px solid #e0e7ff;
+}
+
+.recommendation strong {
+    color: #3730a3;
+    font-size: 17px;
+}
+
+.recommendation p {
+    color: #4b5563;
+    line-height: 1.7;
+    margin-top: 10px;
+}
+
+.mail-box {
+    white-space: pre-wrap;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    padding: 18px;
+    border-radius: 12px;
+    line-height: 1.7;
+    color: #374151;
+    font-size: 14px;
+}
+
+.secondary-button {
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #111827;
+    padding: 10px 15px;
+    border-radius: 9px;
+    margin-top: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #f9fafb;
+}
+
+.questions {
+    padding-left: 22px;
+}
+
+.questions li {
+    margin-bottom: 13px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.privacy {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+footer {
+    padding: 30px 20px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+@media(max-width: 780px) {
+    .inputs,
+    .score-grid,
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .hero {
+        margin-top: 45px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <div class="logo">Kariyer<span>AI</span></div>
+        <div class="nav-text">Akıllı CV & Başvuru Asistanı</div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="badge">✦ YAPAY ZEKÂ DESTEKLİ KARİYER ANALİZİ</div>
+
+    <h1>
+        Bir ilana başvurmadan önce<br>
+        <span>ne kadar hazır olduğunuzu görün.</span>
+    </h1>
+
+    <p>
+        CV'nizi ve ilanı karşılaştırın. Teknik uyumunuzu,
+        ATS yapınızı, eksik becerilerinizi ve başvurunuzu
+        nasıl güçlendirebileceğinizi tek analizde görün.
+    </p>
+</section>
+
+<main class="container">
+
+    <section class="panel">
+
+        <div class="inputs">
+
+            <div>
+                <div class="label">1. CV'nizi yükleyin</div>
+
+                <label class="upload" for="cvFile">
+                    <div class="upload-icon">📄</div>
+                    <strong>PDF CV'nizi seçin</strong>
+                    <small>PDF formatı desteklenmektedir</small>
+                    <div id="fileName"></div>
+                </label>
+
+                <input id="cvFile" type="file" accept=".pdf">
+            </div>
+
+            <div>
+                <div class="label">2. İş / Staj ilanını ekleyin</div>
+
+                <textarea
+                    id="jobDescription"
+                    placeholder="Başvurmak istediğiniz ilanın açıklamasını buraya yapıştırın..."
+                ></textarea>
+            </div>
+
+        </div>
+
+        <button
+            id="analyzeButton"
+            class="main-button"
+            onclick="analyzeCV()"
+        >
+            CV'mi Analiz Et →
+        </button>
+
+        <div id="status"></div>
+
+        <div class="privacy">
+            🔒 CV'niz bu sürümde yalnızca analiz amacıyla işlenir.
+        </div>
+
+    </section>
+
+
+    <section id="results" class="results">
+
+        <h2 class="section-title">Analiz Sonucunuz</h2>
+
+        <div class="score-grid">
+
+            <div class="score-card primary">
+
+                <div class="score-label">
+                    GENEL UYUM
+                </div>
+
+                <div class="big-score">
+                    <span id="overallScore">0</span><span class="percent">%</span>
+                </div>
+
+                <div class="progress">
+                    <div id="overallBar"></div>
+                </div>
+
+                <div id="criteria" class="criteria"></div>
+
+            </div>
+
+
+            <div class="score-card">
+
+                <div class="score-label">
+                    TEKNİK UYUM
+                </div>
+
+                <div class="small-score">
+                    <span id="technicalScore">0</span><span class="percent">%</span>
+                </div>
+
+                <div class="progress light">
+                    <div id="technicalBar"></div>
+                </div>
+
+                <div class="criteria">
+                    İlanın teknik gereksinimlerine göre
+                </div>
+
+            </div>
+
+
+            <div class="score-card">
+
+                <div class="score-label">
+                    ATS PUANI
+                </div>
+
+                <div class="small-score">
+                    <span id="atsScore">0</span><span class="percent">%</span>
+                </div>
+
+                <div class="progress light">
+                    <div id="atsBar"></div>
+                </div>
+
+                <div class="criteria">
+                    CV bölüm yapısı ve okunabilirliği
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="two-column">
+
+            <div class="card">
+                <h3>✓ Eşleşen Beceriler</h3>
+                <div id="matchedSkills"></div>
+            </div>
+
+            <div class="card">
+                <h3>△ Eksik Beceriler</h3>
+                <div id="missingSkills"></div>
+            </div>
+
+        </div>
+
+
+        <div class="full-card">
+
+            <h3>💡 CV Geliştirme Planı</h3>
+
+            <ol
+                id="adviceList"
+                class="advice-list"
+            ></ol>
+
+        </div>
+
+
+        <div class="recommendation">
+
+            <strong id="recommendation">
+                Başvuru Tavsiyesi
+            </strong>
+
+            <p id="evaluation"></p>
+
+        </div>
+
+
+        <div class="full-card">
+
+            <h3>✉ İlana Özel Başvuru Maili</h3>
+
+            <div
+                id="applicationMail"
+                class="mail-box"
+            ></div>
+
+            <button
+                class="secondary-button"
+                onclick="copyMail()"
+            >
+                Maili Kopyala
+            </button>
+
+        </div>
+
+
+<div class="full-card">
+
+    <h3>🔍 Eksik Beceriler Neden Eksik?</h3>
+
+    <div id="missingReasons"></div>
+
+</div>
+
+
+<div class="full-card">
+
+    <h3>📄 İlana Özel Cover Letter</h3>
+
+    <div id="coverLetter" class="mail-box"></div>
+
+    <button
+        class="secondary-button"
+        onclick="copyText('coverLetter')"
+    >
+        Cover Letter'ı Kopyala
+    </button>
+
+</div>
+
+
+<div class="full-card">
+
+    <h3>💼 LinkedIn Recruiter Mesajı</h3>
+
+    <div id="linkedinMessage" class="mail-box"></div>
+
+    <button
+        class="secondary-button"
+        onclick="copyText('linkedinMessage')"
+    >
+        LinkedIn Mesajını Kopyala
+    </button>
+
+</div>
+
+
+        <div class="full-card">
+
+            <h3>🎯 Mülakat Hazırlığı</h3>
+
+            <ol
+                id="interviewQuestions"
+                class="questions"
+            ></ol>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    KariyerAI • Daha güçlü başvurular için akıllı CV analizi
+</footer>
+
+
+<script>
+
+const fileInput =
+    document.getElementById("cvFile");
+
+fileInput.addEventListener(
+    "change",
+    function() {
+
+        const fileName =
+            document.getElementById("fileName");
+
+        if (this.files.length > 0) {
+            fileName.textContent =
+                "✓ " + this.files[0].name;
+        }
+
+    }
+);
+
+
+async function analyzeCV() {
+
+    const file =
+        document.getElementById("cvFile").files[0];
+
+    const job =
+        document.getElementById("jobDescription").value.trim();
+
+    const button =
+        document.getElementById("analyzeButton");
+
+    const status =
+        document.getElementById("status");
+
+
+    if (!file) {
+        alert("Lütfen PDF CV'nizi yükleyin.");
+        return;
+    }
+
+    if (job.length < 30) {
+        alert("Lütfen iş/staj ilanını daha detaylı ekleyin.");
+        return;
+    }
+
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    formData.append(
+        "job_description",
+        job
+    );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "CV'niz analiz ediliyor...";
+
+    status.textContent =
+        "Yapay zekâ CV'nizi ve ilanı karşılaştırıyor. Yerel model kullanıldığı için biraz sürebilir.";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/analyze-cv",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail || "Analiz başarısız."
+            );
+
+        }
+
+
+        renderResults(data);
+
+        status.textContent =
+            "✓ Analiz tamamlandı.";
+
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        status.textContent =
+            "❌ " + error.message;
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "CV'mi Tekrar Analiz Et →";
+
+    }
+
+}
+
+
+function renderResults(data) {
+
+    document.getElementById("results")
+        .style.display = "block";
+
+
+    document.getElementById("overallScore")
+        .textContent = data.genel_puan;
+
+    document.getElementById("technicalScore")
+        .textContent = data.teknik_puan;
+
+    document.getElementById("atsScore")
+        .textContent = data.ats_puani;
+
+
+    setTimeout(function() {
+
+        document.getElementById("overallBar")
+            .style.width =
+            data.genel_puan + "%";
+
+        document.getElementById("technicalBar")
+            .style.width =
+            data.teknik_puan + "%";
+
+        document.getElementById("atsBar")
+            .style.width =
+            data.ats_puani + "%";
+
+    }, 100);
+
+
+    document.getElementById("criteria")
+        .textContent =
+        data.karsilanan_zorunlu +
+        "/" +
+        data.toplam_zorunlu +
+        " zorunlu • " +
+        data.karsilanan_tercih +
+        "/" +
+        data.toplam_tercih +
+        " tercih kriteri karşılandı";
+
+
+    renderSkills(
+        "matchedSkills",
+        data.eslesen_beceriler,
+        "good",
+        "✓",
+        "Henüz eşleşen teknik beceri bulunamadı."
+    );
+
+
+    renderSkills(
+        "missingSkills",
+        data.eksik_beceriler,
+        "bad",
+        "△",
+        "Belirgin bir teknik eksik bulunamadı."
+    );
+
+
+    const advice =
+        document.getElementById("adviceList");
+
+    advice.innerHTML = "";
+
+ (data.cv_onerileri || [])
+    .forEach(function(item) {
+
+        const li = document.createElement("li");
+
+        if (typeof item === "string") {
+            li.textContent = item;
+        } else if (item && typeof item === "object") {
+            li.textContent =
+                item.oneri ||
+                item.aciklama ||
+                item.metin ||
+                Object.values(item).join(" ");
+        } else {
+            li.textContent = String(item);
+        }
+
+        advice.appendChild(li);
+
+    });
+
+    document.getElementById("recommendation")
+        .textContent =
+        "Başvuru Tavsiyesi: " +
+        (data.basvuru_tavsiyesi || "Değerlendirildi");
+
+
+    document.getElementById("evaluation")
+        .textContent =
+        data.degerlendirme || "";
+
+
+    document.getElementById("applicationMail")
+        .textContent =
+        data.basvuru_maili ||
+        "Başvuru maili oluşturulamadı.";
+
+
+renderMissingReasons(data.eksik_beceri_aciklamalari);
+
+document.getElementById("coverLetter")
+    .textContent =
+    data.cover_letter ||
+    "Cover Letter oluşturulamadı.";
+
+document.getElementById("linkedinMessage")
+    .textContent =
+    data.linkedin_mesaji ||
+    "LinkedIn mesajı oluşturulamadı.";
+
+    const questions =
+        document.getElementById("interviewQuestions");
+
+    questions.innerHTML = "";
+
+    (data.mulakat_sorulari || [])
+        .forEach(function(question) {
+
+            const li =
+                document.createElement("li");
+
+            li.textContent = question;
+
+            questions.appendChild(li);
+
+        });
+
+
+    document.getElementById("results")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+function renderSkills(
+    elementId,
+    skills,
+    className,
+    symbol,
+    emptyText
+) {
+
+    const container =
+        document.getElementById(elementId);
+
+    container.innerHTML = "";
+
+
+    if (!skills || skills.length === 0) {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className = "empty";
+
+        empty.textContent = emptyText;
+
+        container.appendChild(empty);
+
+        return;
+
+    }
+
+
+    skills.forEach(function(skill) {
+
+        const item =
+            document.createElement("span");
+
+        item.className =
+            "skill " + className;
+
+        item.textContent =
+            symbol + " " + skill;
+
+        container.appendChild(item);
+
+    });
+
+}
+function renderMissingReasons(reasons) {
+
+    const container = document.getElementById("missingReasons");
+    container.innerHTML = "";
+
+    if (!reasons || reasons.length === 0) {
+        container.innerHTML =
+            '<div class="empty">Eksik beceri açıklaması bulunamadı.</div>';
+        return;
+    }
+
+    reasons.forEach(function(item) {
+
+        const box = document.createElement("div");
+
+        box.style.padding = "14px";
+        box.style.marginBottom = "10px";
+        box.style.background = "#fff7ed";
+        box.style.borderRadius = "10px";
+
+        const title = document.createElement("strong");
+        title.textContent = "△ " + (item.beceri || "Beceri");
+
+        const description = document.createElement("div");
+        description.style.marginTop = "6px";
+        description.style.color = "#6b7280";
+        description.style.lineHeight = "1.5";
+
+        description.textContent =
+            item.neden || "CV içerisinde açık kanıt bulunamadı.";
+
+        box.appendChild(title);
+        box.appendChild(description);
+
+        container.appendChild(box);
+    });
+}
+
+
+async function copyText(elementId) {
+
+    const text =
+        document.getElementById(elementId).textContent;
+
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("Metin kopyalandı.");
+    } catch(error) {
+        alert("Otomatik kopyalama yapılamadı.");
+    }
+}
+
+async function copyMail() {
+
+    const mail =
+        document.getElementById("applicationMail")
+            .textContent;
+
+    try {
+
+        await navigator.clipboard.writeText(mail);
+
+        alert("Başvuru maili kopyalandı.");
+
+    }
+
+    catch(error) {
+
+        alert(
+            "Tarayıcı otomatik kopyalamaya izin vermedi. Maili manuel olarak seçip kopyalayabilirsiniz."
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
